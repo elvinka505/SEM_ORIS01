@@ -13,7 +13,6 @@ import java.util.Optional;
 
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
-//
     private UserService userService;
 
     @Override
