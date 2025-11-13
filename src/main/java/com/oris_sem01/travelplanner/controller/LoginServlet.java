@@ -22,7 +22,6 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // Отображение страницы логина
         req.getRequestDispatcher("/WEB-INF/templates/login.ftl").forward(req, resp);
     }
 
