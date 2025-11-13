@@ -1,11 +1,10 @@
 package com.oris_sem01.travelplanner.service.impl;
 
-import com.oris_sem01.travelplanner.config.DatabaseConfig;
 import com.oris_sem01.travelplanner.dao.UserDao;
 import com.oris_sem01.travelplanner.dao.impl.UserDaoImpl;
 import com.oris_sem01.travelplanner.model.User;
 import com.oris_sem01.travelplanner.service.UserService;
-import org.mindrot.jbcrypt.BCrypt;
+import com.oris_sem01.travelplanner.config.DatabaseConfig;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -14,7 +13,7 @@ import java.util.Optional;
 
 public class UserServiceImpl implements UserService {
 
-    private static UserServiceImpl instance;
+    private static volatile UserServiceImpl instance;
     private final UserDao userDao;
 
     private UserServiceImpl() {
@@ -22,7 +21,7 @@ public class UserServiceImpl implements UserService {
             Connection connection = DatabaseConfig.getConnection();
             this.userDao = new UserDaoImpl(connection);
         } catch (SQLException e) {
-            throw new RuntimeException("Database connection failed", e);
+            throw new RuntimeException("DB connection error", e);
         }
     }
 
@@ -54,8 +53,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean save(User user) {
-        String hashed = BCrypt.hashpw(user.getPasswordHash(), BCrypt.gensalt());
-        user.setPasswordHash(hashed);
         return userDao.save(user);
     }
 
@@ -67,9 +64,5 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean delete(Long id) {
         return userDao.delete(id);
-    }
-
-    public boolean checkPassword(User user, String rawPassword) {
-        return user != null && BCrypt.checkpw(rawPassword, user.getPasswordHash());
     }
 }

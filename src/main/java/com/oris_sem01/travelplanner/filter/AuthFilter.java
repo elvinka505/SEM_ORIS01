@@ -1,8 +1,8 @@
 package com.oris_sem01.travelplanner.filter;
 
-import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.*;
+import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.util.Set;
 
@@ -27,23 +27,26 @@ public class AuthFilter implements Filter {
 
         // Разрешаем все статические ресурсы и публичные пути
         boolean allowed = publicPaths.stream().anyMatch(path::startsWith);
+
         if (allowed) {
             chain.doFilter(request, response);
             return;
         }
 
         HttpSession session = req.getSession(false);
+
         if (session == null || session.getAttribute("user") == null) {
             // Неавторизованный — редирект на страницу логина
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
-        // авторизован — пропускаем
+        // авторизован — пропускаем запрос
         chain.doFilter(request, response);
     }
 
     @Override
     public void destroy() {
+        // очистка ресурсов, если нужно
     }
 }

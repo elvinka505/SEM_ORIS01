@@ -4,7 +4,6 @@ import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -16,17 +15,16 @@ public class LoggingFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+        // Можно добавить инициализацию, если нужно
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-
         String method = httpRequest.getMethod();
         String path = httpRequest.getRequestURI();
         String timestamp = LocalDateTime.now().format(formatter);
-
         long startTime = System.currentTimeMillis();
 
         try {
@@ -43,5 +41,6 @@ public class LoggingFilter implements Filter {
 
     @Override
     public void destroy() {
+        // Cleanup, если нужно
     }
 }

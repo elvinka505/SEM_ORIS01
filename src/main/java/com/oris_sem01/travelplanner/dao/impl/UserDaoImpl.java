@@ -18,11 +18,13 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public boolean save(User user) {
-        String sql = "INSERT INTO users (email, password, name) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO users (email, password, first_name, last_name, is_admin) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, user.getEmail());
-            ps.setString(2, user.getPassword());
-            ps.setString(3, user.getName());
+            ps.setString(2, user.getPasswordHash());
+            ps.setString(3, user.getFirstName());
+            ps.setString(4, user.getLastName());
+            ps.setBoolean(5, user.isAdmin());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -64,8 +66,8 @@ public class UserDaoImpl implements UserDao {
     public List<User> findAll() {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users";
-        try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
+        try (Statement stmt = connection.createStatement()) {
+            ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 users.add(mapUser(rs));
             }
@@ -77,12 +79,14 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public boolean update(User user) {
-        String sql = "UPDATE users SET email = ?, password = ?, name = ? WHERE id = ?";
+        String sql = "UPDATE users SET email = ?, password = ?, first_name = ?, last_name = ?, is_admin = ? WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, user.getEmail());
-            ps.setString(2, user.getPassword());
-            ps.setString(3, user.getName());
-            ps.setLong(4, user.getId());
+            ps.setString(2, user.getPasswordHash());
+            ps.setString(3, user.getFirstName());
+            ps.setString(4, user.getLastName());
+            ps.setBoolean(5, user.isAdmin());
+            ps.setLong(6, user.getId());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -107,7 +111,9 @@ public class UserDaoImpl implements UserDao {
                 rs.getLong("id"),
                 rs.getString("email"),
                 rs.getString("password"),
-                rs.getString("name")
+                rs.getString("first_name"),
+                rs.getString("last_name"),
+                rs.getBoolean("is_admin")
         );
     }
 }
