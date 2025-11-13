@@ -17,7 +17,6 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        // Инициализация userService через синглтон реализации
         userService = UserServiceImpl.getInstance();
     }
 
