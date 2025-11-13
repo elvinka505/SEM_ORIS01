@@ -1,69 +1,54 @@
 package com.oris_sem01.travelplanner.controller;
 
-import com.oris_sem01.travelplanner.config.DatabaseConfig;
-import com.oris_sem01.travelplanner.config.FreemarkerConfig;
-import com.oris_sem01.travelplanner.dao.impl.UserDaoImpl;
-import com.oris_sem01.travelplanner.service.impl.UserServiceImpl;
 import com.oris_sem01.travelplanner.model.User;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import com.oris_sem01.travelplanner.service.UserService;
+import com.oris_sem01.travelplanner.util.PasswordUtils;
 
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
-@WebServlet("/register")
+@WebServlet(name = "RegisterServlet", urlPatterns = {"/register"})
 public class RegisterServlet extends HttpServlet {
-    private UserServiceImpl userService;
-    private Configuration freemarkerConfig;
 
-    @Override
-    public void init() throws ServletException {
-        try {
-            Connection connection = DatabaseConfig.getConnection();
-            userService = new UserServiceImpl(new UserDaoImpl(connection));
-            freemarkerConfig = FreemarkerConfig.getConfig();
-        } catch (SQLException e) {
-            throw new ServletException("Failed to initialize RegisterServlet", e);
-        }
-    }
+    private final UserService userService = UserService.getInstance(); // замените на ваш способ
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Map<String, Object> root = new HashMap<>();
-        resp.setContentType("text/html;charset=UTF-8");
-        try {
-            Template template = freemarkerConfig.getTemplate("users/register.ftl");
-            PrintWriter writer = resp.getWriter();
-            template.process(root, writer);
-        } catch (TemplateException e) {
-            throw new ServletException(e);
-        }
+        req.getRequestDispatcher("/WEB-INF/templates/register.ftl").forward(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        User user = new User();
-        user.setFirstName(req.getParameter("firstname"));
-        user.setLastName(req.getParameter("lastname"));
-        user.setEmail(req.getParameter("email"));
-        user.setPasswordHash(req.getParameter("password"));
-        user.setRole("USER");
+        String fname = req.getParameter("firstName");
+        String lname = req.getParameter("lastName");
+        String email = req.getParameter("email");
+        String rawPassword = req.getParameter("password");
 
-        boolean success = userService.save(user);
-        if (success) {
-            resp.sendRedirect("/travelplanner/login?success=1");
-        } else {
-            resp.sendRedirect("/travelplanner/register?error=1");
+        // Минимальная серверная валидация
+        if (email == null || rawPassword == null || rawPassword.length() < 6) {
+            resp.sendRedirect(req.getContextPath() + "/register?error=badinput");
+            return;
+        }
+
+        // Хешируем пароль перед сохранением
+        String hashed = PasswordUtils.hashPassword(rawPassword);
+
+        User user = new User();
+        user.setFirstName(fname);
+        user.setLastName(lname);
+        user.setEmail(email);
+        user.setPasswordHash(hashed); // убедитесь, что модель содержит такое поле
+
+        try {
+            userService.create(user);
+            // После регистрации — делаем PRG на страницу логина или сразу логиним пользователя и редиректим
+            resp.sendRedirect(req.getContextPath() + "/login?registered=true");
+        } catch (Exception e) {
+            // логируем и возвращаем ошибку регистрации
+            e.printStackTrace();
+            resp.sendRedirect(req.getContextPath() + "/register?error=exists");
         }
     }
 }

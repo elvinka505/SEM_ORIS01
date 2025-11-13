@@ -32,7 +32,7 @@ public class UserProfileServlet extends HttpServlet {
     public void init() throws ServletException {
         try {
             Connection connection = DatabaseConfig.getConnection();
-            userService = new UserServiceImpl(new UserDaoImpl(connection));
+            UserServiceImpl.getInstance();
             freemarkerConfig = FreemarkerConfig.getConfig();
         } catch (SQLException e) {
             throw new ServletException("Failed to initialize UserProfileServlet", e);

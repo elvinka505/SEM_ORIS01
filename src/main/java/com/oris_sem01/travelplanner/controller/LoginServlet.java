@@ -1,52 +1,25 @@
 package com.oris_sem01.travelplanner.controller;
 
-import com.oris_sem01.travelplanner.config.DatabaseConfig;
-import com.oris_sem01.travelplanner.config.FreemarkerConfig;
-import com.oris_sem01.travelplanner.dao.impl.UserDaoImpl;
-import com.oris_sem01.travelplanner.service.impl.UserServiceImpl;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import com.oris_sem01.travelplanner.model.User;
+import com.oris_sem01.travelplanner.service.UserService;
+import com.oris_sem01.travelplanner.util.PasswordUtils;
 
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
-@WebServlet("/login")
+@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
-    private UserServiceImpl userService;
-    private Configuration freemarkerConfig;
 
-    @Override
-    public void init() throws ServletException {
-        try {
-            Connection connection = DatabaseConfig.getConnection();
-            userService = new UserServiceImpl(new UserDaoImpl(connection));
-            freemarkerConfig = FreemarkerConfig.getConfig();
-        } catch (SQLException e) {
-            throw new ServletException("Failed to initialize LoginServlet", e);
-        }
-    }
+    // Получите UserService так, как у вас устроена инициализация (ServiceLocator, DI, и т.д.)
+    private final UserService userService = UserService.getInstance(); // замените на ваш способ
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Map<String, Object> root = new HashMap<>();
-        resp.setContentType("text/html;charset=UTF-8");
-        try {
-            Template template = freemarkerConfig.getTemplate("users/login.ftl");
-            PrintWriter writer = resp.getWriter();
-            template.process(root, writer);
-        } catch (TemplateException e) {
-            throw new ServletException(e);
-        }
+        // Отобразить страницу логина (ftl/jsp)
+        req.getRequestDispatcher("/WEB-INF/templates/login.ftl").forward(req, resp);
     }
 
     @Override
@@ -54,12 +27,26 @@ public class LoginServlet extends HttpServlet {
         String email = req.getParameter("email");
         String password = req.getParameter("password");
 
-        var user = userService.getByEmail(email);
-        if (user.isPresent()) {
-            req.getSession().setAttribute("user", user.get());
-            resp.sendRedirect("/travelplanner/tours");
-        } else {
-            resp.sendRedirect("/travelplanner/login?error=invalid");
+        if (email == null || password == null) {
+            resp.sendRedirect(req.getContextPath() + "/login?error=missing");
+            return;
         }
+
+        Optional<User> optUser = userService.getByEmail(email);
+        if (optUser.isPresent()) {
+            User user = optUser.get();
+            String storedHash = user.getPasswordHash(); // имя геттера проверьте в вашей модели
+            if (PasswordUtils.checkPassword(password, storedHash)) {
+                // Успешный вход — создаём/обновляем сессию
+                HttpSession session = req.getSession(true);
+                session.setAttribute("user", user);
+                // по безопасности: установите session.setMaxInactiveInterval(...) при необходимости
+                resp.sendRedirect(req.getContextPath() + "/tours"); // PRG
+                return;
+            }
+        }
+
+        // Неверные учётные данные — редирект на форму с ошибкой
+        resp.sendRedirect(req.getContextPath() + "/login?error=invalid");
     }
 }

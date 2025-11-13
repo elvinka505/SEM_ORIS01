@@ -37,7 +37,7 @@ public class AdminServlet extends HttpServlet {
         try {
             Connection connection = DatabaseConfig.getConnection();
             tourService = new TourServiceImpl(new TourDaoImpl(connection));
-            userService = new UserServiceImpl(new UserDaoImpl(connection));
+            UserServiceImpl.getInstance();
             bookingService = new BookingServiceImpl(new BookingDaoImpl(connection));
             freemarkerConfig = FreemarkerConfig.getConfig();
         } catch (SQLException e) {
