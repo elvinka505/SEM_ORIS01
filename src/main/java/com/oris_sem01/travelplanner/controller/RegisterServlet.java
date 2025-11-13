@@ -2,6 +2,7 @@ package com.oris_sem01.travelplanner.controller;
 
 import com.oris_sem01.travelplanner.model.User;
 import com.oris_sem01.travelplanner.service.UserService;
+import com.oris_sem01.travelplanner.service.impl.UserServiceImpl;
 import com.oris_sem01.travelplanner.util.PasswordUtils;
 
 import javax.servlet.ServletException;
@@ -12,7 +13,12 @@ import java.io.IOException;
 @WebServlet(name = "RegisterServlet", urlPatterns = {"/register"})
 public class RegisterServlet extends HttpServlet {
 
-    private final UserService userService = UserService.getInstance(); // замените на ваш способ
+    private UserService userService;
+
+    @Override
+    public void init() throws ServletException {
+        userService = UserServiceImpl.getInstance();
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -21,34 +27,28 @@ public class RegisterServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String fname = req.getParameter("firstName");
-        String lname = req.getParameter("lastName");
         String email = req.getParameter("email");
-        String rawPassword = req.getParameter("password");
+        String password = req.getParameter("password");
+        String firstName = req.getParameter("firstName");
+        String lastName = req.getParameter("lastName");
 
-        // Минимальная серверная валидация
-        if (email == null || rawPassword == null || rawPassword.length() < 6) {
-            resp.sendRedirect(req.getContextPath() + "/register?error=badinput");
+        if (email == null || password == null || firstName == null || lastName == null ||
+                email.isEmpty() || password.isEmpty() || firstName.isEmpty() || lastName.isEmpty()) {
+            req.setAttribute("error", "Все поля обязательны для заполнения");
+            req.getRequestDispatcher("/WEB-INF/templates/register.ftl").forward(req, resp);
             return;
         }
 
-        // Хешируем пароль перед сохранением
-        String hashed = PasswordUtils.hashPassword(rawPassword);
+        String passwordHash = PasswordUtils.hashPassword(password);
+        User newUser = new User(null, email, passwordHash, firstName, lastName, false);
 
-        User user = new User();
-        user.setFirstName(fname);
-        user.setLastName(lname);
-        user.setEmail(email);
-        user.setPasswordHash(hashed); // убедитесь, что модель содержит такое поле
+        boolean success = userService.save(newUser);
 
-        try {
-            userService.create(user);
-            // После регистрации — делаем PRG на страницу логина или сразу логиним пользователя и редиректим
-            resp.sendRedirect(req.getContextPath() + "/login?registered=true");
-        } catch (Exception e) {
-            // логируем и возвращаем ошибку регистрации
-            e.printStackTrace();
-            resp.sendRedirect(req.getContextPath() + "/register?error=exists");
+        if (success) {
+            resp.sendRedirect(req.getContextPath() + "/login");
+        } else {
+            req.setAttribute("error", "Ошибка регистрации, возможно email уже используется");
+            req.getRequestDispatcher("/WEB-INF/templates/register.ftl").forward(req, resp);
         }
     }
 }

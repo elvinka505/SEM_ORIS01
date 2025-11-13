@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class DatabaseConfig {
     private static final String DB_URL = System.getenv().getOrDefault("DB_URL", "jdbc:postgresql://localhost:5432/travel_db");
     private static final String DB_USER = System.getenv().getOrDefault("DB_USER", "postgres");
-    private static final String DB_PASSWORD = System.getenv().getOrDefault("DB_PASSWORD", "postgres");
+    private static final String DB_PASSWORD = System.getenv().getOrDefault("DB_PASSWORD", "qwerty007");
 
     static {
         try {

@@ -2,23 +2,18 @@ package com.oris_sem01.travelplanner.util;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-public final class PasswordUtils {
+public class PasswordUtils {
 
-    private static final int LOG_ROUNDS = 12; // можете уменьшить при медленной сборке
-
-    private PasswordUtils() {}
-
-    public static String hashPassword(String plainTextPassword) {
-        if (plainTextPassword == null) throw new IllegalArgumentException("Password is null");
-        return BCrypt.hashpw(plainTextPassword, BCrypt.gensalt(LOG_ROUNDS));
+    // Метод для хэширования пароля
+    public static String hashPassword(String plainPassword) {
+        return BCrypt.hashpw(plainPassword, BCrypt.gensalt());
     }
 
-    public static boolean checkPassword(String plainPassword, String storedHash) {
-        if (plainPassword == null || storedHash == null) return false;
-        try {
-            return BCrypt.checkpw(plainPassword, storedHash);
-        } catch (IllegalArgumentException ex) {
+    // Метод для проверки пароля
+    public static boolean verifyPassword(String plainPassword, String hashedPassword) {
+        if (hashedPassword == null || hashedPassword.isEmpty()) {
             return false;
         }
+        return BCrypt.checkpw(plainPassword, hashedPassword);
     }
 }

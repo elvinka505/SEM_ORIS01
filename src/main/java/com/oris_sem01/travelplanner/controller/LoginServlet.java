@@ -2,6 +2,7 @@ package com.oris_sem01.travelplanner.controller;
 
 import com.oris_sem01.travelplanner.model.User;
 import com.oris_sem01.travelplanner.service.UserService;
+import com.oris_sem01.travelplanner.service.impl.UserServiceImpl;
 import com.oris_sem01.travelplanner.util.PasswordUtils;
 
 import javax.servlet.ServletException;
@@ -12,13 +13,18 @@ import java.util.Optional;
 
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
+//
+    private UserService userService;
 
-    // Получите UserService так, как у вас устроена инициализация (ServiceLocator, DI, и т.д.)
-    private final UserService userService = UserService.getInstance(); // замените на ваш способ
+    @Override
+    public void init() throws ServletException {
+        // Инициализация userService через синглтон реализации
+        userService = UserServiceImpl.getInstance();
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // Отобразить страницу логина (ftl/jsp)
+        // Отображение страницы логина
         req.getRequestDispatcher("/WEB-INF/templates/login.ftl").forward(req, resp);
     }
 
@@ -27,26 +33,22 @@ public class LoginServlet extends HttpServlet {
         String email = req.getParameter("email");
         String password = req.getParameter("password");
 
-        if (email == null || password == null) {
-            resp.sendRedirect(req.getContextPath() + "/login?error=missing");
-            return;
-        }
+        Optional<User> userOptional = userService.getByEmail(email);
 
-        Optional<User> optUser = userService.getByEmail(email);
-        if (optUser.isPresent()) {
-            User user = optUser.get();
-            String storedHash = user.getPasswordHash(); // имя геттера проверьте в вашей модели
-            if (PasswordUtils.checkPassword(password, storedHash)) {
-                // Успешный вход — создаём/обновляем сессию
-                HttpSession session = req.getSession(true);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            boolean passwordValid = PasswordUtils.verifyPassword(password, user.getPasswordHash());
+
+            if (passwordValid) {
+                HttpSession session = req.getSession();
                 session.setAttribute("user", user);
-                // по безопасности: установите session.setMaxInactiveInterval(...) при необходимости
-                resp.sendRedirect(req.getContextPath() + "/tours"); // PRG
+                resp.sendRedirect(req.getContextPath() + "/index");
                 return;
             }
         }
 
-        // Неверные учётные данные — редирект на форму с ошибкой
-        resp.sendRedirect(req.getContextPath() + "/login?error=invalid");
+        req.setAttribute("error", "Неверный email или пароль");
+        req.getRequestDispatcher("/WEB-INF/templates/login.ftl").forward(req, resp);
     }
 }
