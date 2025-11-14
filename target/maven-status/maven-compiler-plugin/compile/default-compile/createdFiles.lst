@@ -2,6 +2,7 @@ com/oris_sem01/travelplanner/dao/impl/ReviewDaoImpl.class
 com/oris_sem01/travelplanner/model/Tour.class
 com/oris_sem01/travelplanner/service/TourService.class
 com/oris_sem01/travelplanner/service/BookingService.class
+com/oris_sem01/travelplanner/util/ConnectionPool.class
 com/oris_sem01/travelplanner/model/Booking.class
 com/oris_sem01/travelplanner/model/User.class
 com/oris_sem01/travelplanner/dao/impl/BookingDaoImpl.class
@@ -30,6 +31,7 @@ com/oris_sem01/travelplanner/config/DatabaseConfig.class
 com/oris_sem01/travelplanner/controller/ReviewServlet.class
 com/oris_sem01/travelplanner/dao/TourDao.class
 com/oris_sem01/travelplanner/util/JdbcUtils.class
+com/oris_sem01/travelplanner/util/CsrfTokenManager.class
 com/oris_sem01/travelplanner/service/ReviewService.class
 com/oris_sem01/travelplanner/listener/AppContextListener.class
 com/oris_sem01/travelplanner/dao/ScheduleDao.class
@@ -39,6 +41,7 @@ com/oris_sem01/travelplanner/filter/LoggingFilter.class
 com/oris_sem01/travelplanner/controller/RegisterServlet.class
 com/oris_sem01/travelplanner/controller/ScheduleServlet.class
 com/oris_sem01/travelplanner/controller/UserProfileServlet.class
+com/oris_sem01/travelplanner/controller/EditUserServlet.class
 com/oris_sem01/travelplanner/controller/LogoutServlet.class
 com/oris_sem01/travelplanner/util/DbCheck.class
 com/oris_sem01/travelplanner/util/PaginationUtils.class

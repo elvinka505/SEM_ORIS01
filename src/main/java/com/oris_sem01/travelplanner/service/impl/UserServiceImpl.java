@@ -1,68 +1,75 @@
 package com.oris_sem01.travelplanner.service.impl;
 
-import com.oris_sem01.travelplanner.dao.UserDao;
 import com.oris_sem01.travelplanner.dao.impl.UserDaoImpl;
 import com.oris_sem01.travelplanner.model.User;
-import com.oris_sem01.travelplanner.service.UserService;
-import com.oris_sem01.travelplanner.config.DatabaseConfig;
-
-import java.sql.Connection;
-import java.sql.SQLException;
+import com.oris_sem01.travelplanner.util.PasswordUtils;
 import java.util.List;
 import java.util.Optional;
 
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl {
+    private final UserDaoImpl userDao;
 
-    private static volatile UserServiceImpl instance;
-    private final UserDao userDao;
-
-    private UserServiceImpl() {
-        try {
-            Connection connection = DatabaseConfig.getConnection();
-            this.userDao = new UserDaoImpl(connection);
-        } catch (SQLException e) {
-            throw new RuntimeException("DB connection error", e);
-        }
+    public UserServiceImpl(UserDaoImpl userDao) {
+        this.userDao = userDao;
     }
 
-    public static UserServiceImpl getInstance() {
-        if (instance == null) {
-            synchronized (UserServiceImpl.class) {
-                if (instance == null) {
-                    instance = new UserServiceImpl();
-                }
-            }
-        }
-        return instance;
-    }
-
-    @Override
     public Optional<User> getById(Long id) {
         return userDao.findById(id);
     }
 
-    @Override
     public Optional<User> getByEmail(String email) {
         return userDao.findByEmail(email);
     }
 
-    @Override
     public List<User> getAll() {
         return userDao.findAll();
     }
 
-    @Override
     public boolean save(User user) {
-        return userDao.save(user);
+        System.out.println("📝 Начинаем сохранение пользователя: " + user.getEmail());
+
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            System.err.println("❌ Пароль пустой!");
+            return false;
+        }
+
+        // Хэшируем пароль перед сохранением
+        String hashedPassword = PasswordUtils.hashPassword(user.getPassword());
+        user.setPassword(hashedPassword);
+        System.out.println("🔐 Пароль захеширован");
+
+        boolean result = userDao.save(user);
+        if (result) {
+            System.out.println("✅ Пользователь успешно сохранён!");
+        } else {
+            System.err.println("❌ Не удалось сохранить пользователя!");
+        }
+        return result;
     }
 
-    @Override
     public boolean update(User user) {
         return userDao.update(user);
     }
 
-    @Override
     public boolean delete(Long id) {
         return userDao.delete(id);
+    }
+
+    public boolean authenticate(String email, String password) {
+        System.out.println("🔐 Попытка аутентификации: " + email);
+
+        Optional<User> user = userDao.findByEmail(email);
+        if (user.isEmpty()) {
+            System.err.println("❌ Пользователь не найден: " + email);
+            return false;
+        }
+
+        boolean verified = PasswordUtils.verifyPassword(password, user.get().getPassword());
+        if (verified) {
+            System.out.println("✅ Пароль верный!");
+        } else {
+            System.err.println("❌ Пароль неверный!");
+        }
+        return verified;
     }
 }

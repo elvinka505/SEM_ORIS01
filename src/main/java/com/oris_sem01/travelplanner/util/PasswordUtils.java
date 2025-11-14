@@ -4,16 +4,21 @@ import org.mindrot.jbcrypt.BCrypt;
 
 public class PasswordUtils {
 
-    // Метод для хэширования пароля
     public static String hashPassword(String plainPassword) {
+        if (plainPassword == null || plainPassword.isEmpty()) {
+            throw new IllegalArgumentException("Пароль не может быть пустым");
+        }
         return BCrypt.hashpw(plainPassword, BCrypt.gensalt());
     }
 
-    // Метод для проверки пароля
     public static boolean verifyPassword(String plainPassword, String hashedPassword) {
-        if (hashedPassword == null || hashedPassword.isEmpty()) {
+        if (hashedPassword == null || hashedPassword.isEmpty() || plainPassword == null) {
             return false;
         }
-        return BCrypt.checkpw(plainPassword, hashedPassword);
+        try {
+            return BCrypt.checkpw(plainPassword, hashedPassword);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 }

@@ -1,45 +1,59 @@
--- Users
+-- Таблица пользователей
 CREATE TABLE users (
                        id SERIAL PRIMARY KEY,
+                       email VARCHAR(255) UNIQUE NOT NULL,
+                       password VARCHAR(255) NOT NULL,
                        first_name VARCHAR(100),
                        last_name VARCHAR(100),
-                       email VARCHAR(150) UNIQUE NOT NULL,
-                       password_hash VARCHAR(200) NOT NULL,
-                       role VARCHAR(50) DEFAULT 'USER',
+                       role VARCHAR(50) DEFAULT 'user',
                        created_at TIMESTAMP DEFAULT now()
 );
 
--- Tours
+-- Таблица туров
 CREATE TABLE tours (
                        id SERIAL PRIMARY KEY,
-                       title VARCHAR(255) NOT NULL,
+                       name VARCHAR(255) NOT NULL,
                        description TEXT,
-                       price NUMERIC(10,2),
+                       destination VARCHAR(255),
+                       price NUMERIC(10, 2) NOT NULL,
                        created_at TIMESTAMP DEFAULT now()
 );
 
--- Schedules (one tour can have many schedules)
+-- Таблица расписаний (один тур - много расписаний)
 CREATE TABLE schedules (
                            id SERIAL PRIMARY KEY,
-                           tour_id INTEGER NOT NULL REFERENCES tours(id) ON DELETE CASCADE,
+                           tour_id BIGINT NOT NULL REFERENCES tours(id) ON DELETE CASCADE,
                            start_date DATE NOT NULL,
-                           seats INTEGER DEFAULT 0
+                           end_date DATE NOT NULL,
+                           location VARCHAR(255),
+                           description TEXT,
+                           available_seats INTEGER DEFAULT 0,
+                           created_at TIMESTAMP DEFAULT now()
 );
 
--- Bookings (user books a schedule)
+-- Таблица бронирований (пользователь бронирует расписание)
 CREATE TABLE bookings (
                           id SERIAL PRIMARY KEY,
-                          user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-                          schedule_id INTEGER NOT NULL REFERENCES schedules(id) ON DELETE CASCADE,
+                          user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                          tour_id BIGINT NOT NULL REFERENCES tours(id) ON DELETE CASCADE,
+                          booking_date DATE NOT NULL,
+                          status VARCHAR(50) DEFAULT 'pending',
                           created_at TIMESTAMP DEFAULT now()
 );
 
--- Reviews
+-- Таблица отзывов
 CREATE TABLE reviews (
                          id SERIAL PRIMARY KEY,
-                         tour_id INTEGER NOT NULL REFERENCES tours(id) ON DELETE CASCADE,
-                         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                         tour_id BIGINT NOT NULL REFERENCES tours(id) ON DELETE CASCADE,
+                         user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
                          text TEXT,
-                         rating INTEGER,
+                         rating INTEGER CHECK (rating >= 1 AND rating <= 5),
                          created_at TIMESTAMP DEFAULT now()
 );
+
+-- Индексы для оптимизации
+CREATE INDEX idx_tours_name ON tours(name);
+CREATE INDEX idx_bookings_user ON bookings(user_id);
+CREATE INDEX idx_bookings_tour ON bookings(tour_id);
+CREATE INDEX idx_reviews_tour ON reviews(tour_id);
+CREATE INDEX idx_schedules_tour ON schedules(tour_id);

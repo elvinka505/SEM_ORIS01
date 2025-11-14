@@ -1,51 +1,79 @@
 package com.oris_sem01.travelplanner.controller;
 
+import com.oris_sem01.travelplanner.config.DatabaseConfig;
+import com.oris_sem01.travelplanner.dao.impl.UserDaoImpl;
 import com.oris_sem01.travelplanner.model.User;
-import com.oris_sem01.travelplanner.service.UserService;
 import com.oris_sem01.travelplanner.service.impl.UserServiceImpl;
-import com.oris_sem01.travelplanner.util.PasswordUtils;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.Optional;
 
-@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
+@WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-    private UserService userService;
+    private UserServiceImpl userService;
 
     @Override
     public void init() throws ServletException {
-        userService = UserServiceImpl.getInstance();
+        System.out.println("🔧 Инициализирую LoginServlet...");
+        try {
+            Connection connection = DatabaseConfig.getConnection();
+            UserDaoImpl userDao = new UserDaoImpl(connection);
+            userService = new UserServiceImpl(userDao);
+            System.out.println("✅ LoginServlet готов!");
+        } catch (Exception e) {
+            System.err.println("❌ Ошибка при инициализации:");
+            e.printStackTrace();
+            throw new ServletException(e);
+        }
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("/WEB-INF/templates/login.ftl").forward(req, resp);
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Редирект на HTML форму
+        response.sendRedirect("/travelplanner/login.html");
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String email = req.getParameter("email");
-        String password = req.getParameter("password");
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String email = request.getParameter("email");
+        String password = request.getParameter("password");
 
-        Optional<User> userOptional = userService.getByEmail(email);
+        System.out.println("📧 Попытка входа: " + email);
 
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-
-            boolean passwordValid = PasswordUtils.verifyPassword(password, user.getPasswordHash());
-
-            if (passwordValid) {
-                HttpSession session = req.getSession();
-                session.setAttribute("user", user);
-                resp.sendRedirect(req.getContextPath() + "/index");
-                return;
-            }
+        if (userService == null) {
+            System.err.println("❌ userService = null!");
+            response.sendRedirect("/travelplanner/login.html?error=500");
+            return;
         }
 
-        req.setAttribute("error", "Неверный email или пароль");
-        req.getRequestDispatcher("/WEB-INF/templates/login.ftl").forward(req, resp);
+        try {
+            boolean authenticated = userService.authenticate(email, password);
+
+            if (authenticated) {
+                System.out.println("✅ Вход успешен!");
+                Optional<User> user = userService.getByEmail(email);
+                if (user.isPresent()) {
+                    HttpSession session = request.getSession();
+                    session.setAttribute("user", user.get());
+                    response.sendRedirect("/travelplanner/");
+                    return;
+                }
+            }
+
+            System.err.println("❌ Неверный пароль");
+            response.sendRedirect("/travelplanner/login.html?error=invalid");
+        } catch (Exception e) {
+            System.err.println("❌ Ошибка при входе:");
+            e.printStackTrace();
+            response.sendRedirect("/travelplanner/login.html?error=500");
+        }
     }
 }

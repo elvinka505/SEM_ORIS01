@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    <style>
+        body { background: linear-gradient(135deg, #ffb6d9 0%, #ffc0cb 100%); font-family: Arial; }
+        .container { max-width: 400px; margin: 100px auto; background: white; padding: 40px; border-radius: 10px; }
+        h1 { color: #ff1493; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 2px solid #ffb6d9; border-radius: 5px; }
+        button { width: 100%; padding: 10px; background: #ff1493; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        a { text-align: center; display: block; margin-top: 20px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>✨ Регистрация</h1>
+    <form method="POST" action="/travelplanner/register">
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Пароль (минимум 6 символов)" required minlength="6">
+        <input type="text" name="firstName" placeholder="Имя">
+        <input type="text" name="lastName" placeholder="Фамилия">
+        <button type="submit">Создать аккаунт</button>
+    </form>
+    <a href="/travelplanner/login.html">Уже есть аккаунт? Войти</a>
+</div>
+</body>
+</html>

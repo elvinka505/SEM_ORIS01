@@ -1,87 +1,69 @@
-<#assign title="Бронирования - Travel Planner">
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Quicksand', sans-serif;
-            background: linear-gradient(135deg, #FFB6E1 0%, #FFD6E8 50%, #FFF0F6 100%);
-            min-height: 100vh;
-            padding: 30px 20px;
-        }
-        .container { max-width: 1200px; margin: 0 auto; }
-        h1 { font-family: 'Fredoka One', cursive; color: #ff1493; text-align: center; margin-bottom: 30px; font-size: 2.5em; }
-        .nav { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
-        .nav a {
-            padding: 12px 25px;
-            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-        .nav a:hover { transform: translateY(-3px); }
-        table {
-            width: 100%;
-            background: white;
-            border-collapse: collapse;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 15px 40px rgba(255, 20, 147, 0.15);
-            border: 3px solid #FFB6E1;
-        }
-        th {
-            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
-            color: white;
-            padding: 20px;
-            text-align: left;
-            font-weight: bold;
-        }
-        td {
-            padding: 15px 20px;
-            border-bottom: 2px solid #FFD6E8;
-            color: #333;
-        }
-        tr:hover { background: #FFF0F6; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💼 Бронирования - Travel Planner</title>
+    <link rel="stylesheet" href="/travelplanner/static/css/style.css">
 </head>
 <body>
-<div class="container">
-    <h1>📅 Бронирования 💕</h1>
-    <div class="nav">
-        <a href="/travelplanner/">На главную</a>
-        <a href="/travelplanner/tours">Туры</a>
-    </div>
+
+<header>
+    <nav class="container">
+        <div class="logo">💅 Travel Planner</div>
+        <ul>
+            <li><a href="/travelplanner/">🏠 Главная</a></li>
+            <li><a href="/travelplanner/tours">🌴 Туры</a></li>
+            <li><a href="/travelplanner/bookings">💼 Бронирования</a></li>
+            <li><a href="/travelplanner/profile">👑 Профиль</a></li>
+            <li><a href="#" onclick="logout(event)">👋 Выход</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="container">
+    <h1>💼 Мои бронирования</h1>
+
     <#if bookings?? && bookings?size gt 0>
         <table>
             <thead>
             <tr>
                 <th>ID</th>
-                <th>👤 Пользователь</th>
-                <th>✈️ Тур</th>
-                <th>📅 Дата</th>
-                <th>👁️ Просмотр</th>
+                <th>Тур</th>
+                <th>Дата бронирования</th>
+                <th>Статус</th>
+                <th>Действия</th>
             </tr>
             </thead>
             <tbody>
             <#list bookings as booking>
                 <tr>
-                    <td>#${booking.id}</td>
-                    <td>${booking.userName}</td>
-                    <td>${booking.tourName}</td>
+                    <td>${booking.id?c}</td>
+                    <td>Тур #${booking.tourId?c}</td>
                     <td>${booking.bookingDate?string("dd.MM.yyyy")}</td>
-                    <td><a href="/travelplanner/bookings/${booking.id}" style="color: #ff1493;">Подробнее</a></td>
+                    <td style="color: var(--primary-pink); font-weight: 600;">${booking.status}</td>
+                    <td>
+                        <button onclick="deleteItem('bookings', ${booking.id?c})" class="btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                            🗑️ Отменить
+                        </button>
+                    </td>
                 </tr>
             </#list>
             </tbody>
         </table>
     <#else>
-        <p style="text-align: center; color: #ff1493; font-size: 1.2em;">Бронирований нет 😭</p>
+        <div class="card" style="text-align: center; padding: 3rem;">
+            <h2>😔 У вас нет бронирований</h2>
+            <p>Выберите интересующий вас тур и забронируйте путешествие!</p>
+            <a href="/travelplanner/tours" class="btn" style="margin-top: 2rem;">🌴 Выбрать тур</a>
+        </div>
     </#if>
-</div>
+</main>
+
+<footer>
+    <p>💖 Travel Planner 2025 - Путешествуй с нами!</p>
+</footer>
+
+<script src="/travelplanner/static/js/main.js"></script>
 </body>
 </html>
