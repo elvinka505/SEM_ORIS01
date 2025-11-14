@@ -1,142 +1,146 @@
-<#assign title="Travel Planner - Главная">
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${title}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Quicksand', sans-serif;
-            background: linear-gradient(135deg, #FFB6E1 0%, #FFD6E8 50%, #FFF0F6 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            text-align: center;
-            background: white;
-            padding: 60px 40px;
-            border-radius: 25px;
-            box-shadow: 0 20px 60px rgba(255, 20, 147, 0.2);
-            max-width: 600px;
-            border: 3px solid #FFB6E1;
-        }
-
-        h1 {
-            font-family: 'Fredoka One', cursive;
-            font-size: 3em;
-            color: #ff1493;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 2px 2px 4px rgba(255, 20, 147, 0.2);
-        }
-
-        p {
-            color: #666;
-            font-size: 1.1em;
-            margin-bottom: 40px;
-            line-height: 1.8;
-        }
-
-        .buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        button, a {
-            padding: 15px 30px;
-            border: none;
-            border-radius: 50px;
-            font-size: 1em;
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 8px 15px rgba(255, 20, 147, 0.2);
-        }
-
-        button:hover, a:hover {
-            transform: scale(1.1) translateY(-3px);
-            box-shadow: 0 12px 25px rgba(255, 20, 147, 0.4);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #ff69b4 0%, #ffb6d9 100%);
-            color: white;
-        }
-
-        .btn-outline {
-            border: 2px solid #ff1493;
-            color: #ff1493;
-            background: white;
-        }
-
-        .features {
-            margin-top: 50px;
-            text-align: left;
-        }
-
-        .feature-item {
-            margin: 15px 0;
-            padding: 15px;
-            background: linear-gradient(135deg, rgba(255, 192, 203, 0.3) 0%, rgba(255, 182, 225, 0.2) 100%);
-            border-left: 4px solid #ff1493;
-            border-radius: 10px;
-            color: #333;
-        }
-
-        .feature-item strong {
-            color: #ff1493;
-        }
-    </style>
+    <title>✨ Travel Planner - Путешествуй с нами</title>
+    <link rel="stylesheet" href="/travelplanner/static/css/style.css">
 </head>
 <body>
-<div class="container">
-    <h1>✈️ Travel Planner 💕</h1>
-    <p>Добро пожаловать в мир путешествий! Выбирай удивительные туры, бронируй места и исследуй новые горизонты с нами! ✨</p>
 
-    <div class="buttons">
-        <a href="/travelplanner/login" class="btn-primary">💗 Вход</a>
-        <a href="/travelplanner/register" class="btn-secondary">✨ Регистрация</a>
-        <a href="/travelplanner/tours" class="btn-outline">🌍 Все туры</a>
+<header>
+    <nav class="container">
+        <div class="logo">💅 Travel Planner</div>
+        <ul>
+            <li><a href="/travelplanner/">🏠 Главная</a></li>
+            <li><a href="/travelplanner/tours">🌴 Туры</a></li>
+            <li><a href="/travelplanner/bookings">💼 Бронирования</a></li>
+            <li><a href="/travelplanner/profile">👑 Профиль</a></li>
+            <li><a href="#" onclick="logout(event)">👋 Выход</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="container">
+    <h1>✨ Добро пожаловать в Travel Planner ✨</h1>
+
+    <div class="card" style="text-align: center; margin: 3rem 0; padding: 3rem;">
+        <h2 style="margin: 0 0 1rem 0;">🌍 Откройте мир путешествий</h2>
+        <p style="font-size: 1.2rem; color: var(--text-gray); margin-bottom: 2rem;">
+            Найдите идеальное путешествие, забронируйте свой рай и поделитесь впечатлениями
+        </p>
+        <a href="/travelplanner/tours" class="btn" style="font-size: 1.1rem;">🛫 Начать путешествие</a>
     </div>
 
-    <div class="features">
-        <div class="feature-item">
-            <strong>🗺️ Огромный выбор</strong> - Туры по всему миру ждут тебя!
+    <h2 style="text-align: center; margin-top: 4rem;">🌟 Популярные направления</h2>
+
+    <div class="tours-grid">
+        <div class="card">
+            <div style="font-size: 3rem; text-align: center;">🏝️</div>
+            <h3>Мальдивы</h3>
+            <p style="color: var(--text-gray); line-height: 1.6;">Кристально чистые воды и белоснежные пляжи. Рай на земле!</p>
         </div>
-        <div class="feature-item">
-            <strong>💰 Лучшие цены</strong> - Доступные путешествия для всех!
+
+        <div class="card">
+            <div style="font-size: 3rem; text-align: center;">🗼</div>
+            <h3>Париж</h3>
+            <p style="color: var(--text-gray); line-height: 1.6;">Город любви, искусства и моды. Очаровательно и романтично!</p>
         </div>
-        <div class="feature-item">
-            <strong>⭐ Отзывы</strong> - Читай отзывы других путешественников!
-        </div>
-        <div class="feature-item">
-            <strong>🎁 Спецпредложения</strong> - Выигрывай призы и скидки!
+
+        <div class="card">
+            <div style="font-size: 3rem; text-align: center;">🏔️</div>
+            <h3>Альпы</h3>
+            <p style="color: var(--text-gray); line-height: 1.6;">Горные вершины, свежий воздух и приключения. Энергия максимум!</p>
         </div>
     </div>
-</div>
+
+    <div class="card" style="background: linear-gradient(135deg, rgba(255,20,147,0.05) 0%, rgba(255,192,203,0.05) 100%); text-align: center; margin: 3rem 0; padding: 2rem;">
+        <h2>✨ Почему выбирают нас?</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 2rem; margin-top: 2rem;">
+            <div>💎 Премиум качество</div>
+            <div>💰 Лучшие цены</div>
+            <div>🌟 24/7 Поддержка</div>
+            <div>✈️ Безопасность</div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>💖 Travel Planner 2025 - Путешествуй с нами! 💖</p>
+</footer>
+
+<script src="/travelplanner/static/js/main.js"></script>
+</body>
+</html>
+```
+
+---
+
+## 📄 ФАЙЛ 4: tours/list.ftl
+
+```ftl
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌍 Все туры - Travel Planner</title>
+    <link rel="stylesheet" href="/travelplanner/static/css/style.css">
+</head>
+<body>
+
+<header>
+    <nav class="container">
+        <div class="logo">💅 Travel Planner</div>
+        <ul>
+            <li><a href="/travelplanner/">🏠 Главная</a></li>
+            <li><a href="/travelplanner/tours">🌴 Туры</a></li>
+            <li><a href="/travelplanner/bookings">💼 Бронирования</a></li>
+            <li><a href="/travelplanner/profile">👑 Профиль</a></li>
+            <li><a href="#" onclick="logout(event)">👋 Выход</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="container">
+    <h1>🌍 Выбери свой идеальный тур</h1>
+
+    <div class="filters">
+        <input type="text" id="tour-search" placeholder="🔍 Поиск тура..." style="padding: 1rem; border: 2px solid #ffc0cb; border-radius: 12px; font-size: 1rem;">
+    </div>
+
+    <div class="tours-grid">
+        <#list tours as tour>
+            <div class="tour-card" data-price="${tour.price?c}">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem; text-align: center;">🌴</div>
+                <h3 class="tour-name">${tour.name}</h3>
+                <p class="tour-description">${tour.description!""}</p>
+
+                <div style="margin: 1rem 0; padding: 1rem; background: #fff0f6; border-radius: 10px; border-left: 4px solid #ff1493;">
+                    <strong style="color: #ff1493;">📍 Направление:</strong> ${tour.destination!"Не указано"}
+                </div>
+
+                <div class="tour-price">💰 ${tour.price?string("0.00")} ₽</div>
+
+                <a href="/travelplanner/tours/${tour.id?c}" class="btn" style="width: 100%; text-align: center; margin-top: 1rem;">
+                    ✨ ПОДРОБНЕЕ
+                </a>
+            </div>
+        </#list>
+    </div>
+
+    <#if tours?size == 0>
+        <div class="card" style="text-align: center; padding: 3rem;">
+            <h2 style="margin-bottom: 1rem;">😔 Нет доступных туров</h2>
+            <p>Попробуйте пересмотреть критерии поиска</p>
+        </div>
+    </#if>
+</main>
+
+<footer>
+    <p>💖 Travel Planner 2025 - Путешествуй с нами!</p>
+</footer>
+
+<script src="/travelplanner/static/js/main.js"></script>
 </body>
 </html>

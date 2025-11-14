@@ -1,35 +1,32 @@
 package com.oris_sem01.travelplanner.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.oris_sem01.travelplanner.dao.impl.UserDaoImpl;
+import com.oris_sem01.travelplanner.dao.impl.TourDaoImpl;
+import com.oris_sem01.travelplanner.model.Tour;
 import com.oris_sem01.travelplanner.util.ConnectionPool;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-@WebServlet("/api/user/check")
-public class UserCheckServlet extends HttpServlet {
+@WebServlet("/api/tours")
+public class ToursApiServlet extends HttpServlet {
 
-    private static final Logger logger = LogManager.getLogger(UserCheckServlet.class);
-    private UserDaoImpl userDao;
+    private TourDaoImpl tourDao;
     private ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public void init() throws ServletException {
         try {
             Connection conn = ConnectionPool.getInstance().getConnection();
-            userDao = new UserDaoImpl(conn);
+            tourDao = new TourDaoImpl(conn);
         } catch (Exception e) {
-            throw new ServletException("Failed to init UserCheckServlet", e);
+            throw new ServletException("Failed to init ToursApiServlet", e);
         }
     }
 
@@ -37,19 +34,13 @@ public class UserCheckServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        String email = req.getParameter("email");
-        Map<String, Object> result = new HashMap<>();
-
         try {
-            boolean exists = userDao.existsByEmail(email);
-            result.put("exists", exists);
+            List<Tour> tours = tourDao.getAll();
+            resp.setContentType("application/json;charset=UTF-8");
+            mapper.writeValue(resp.getWriter(), tours);
         } catch (Exception e) {
-            logger.error("DB error", e);
             resp.setStatus(500);
-            result.put("error", "Server error");
+            resp.getWriter().write("{\"error\":\"Server error\"}");
         }
-
-        resp.setContentType("application/json;charset=UTF-8");
-        mapper.writeValue(resp.getWriter(), result);
     }
 }

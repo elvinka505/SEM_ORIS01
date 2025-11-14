@@ -1,7 +1,6 @@
 package com.oris_sem01.travelplanner.dao;
 
 import com.oris_sem01.travelplanner.model.User;
-
 import java.util.List;
 import java.util.Optional;
 

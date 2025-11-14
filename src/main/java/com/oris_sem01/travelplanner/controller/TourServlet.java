@@ -1,9 +1,10 @@
 package com.oris_sem01.travelplanner.controller;
 
+import com.oris_sem01.travelplanner.config.DatabaseConfig;
+import com.oris_sem01.travelplanner.config.FreemarkerConfig;
 import com.oris_sem01.travelplanner.dao.impl.TourDaoImpl;
 import com.oris_sem01.travelplanner.model.Tour;
 import com.oris_sem01.travelplanner.service.impl.TourServiceImpl;
-import com.oris_sem01.travelplanner.config.DatabaseConfig;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import jakarta.servlet.ServletException;
@@ -20,193 +21,93 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@WebServlet("/tours")
+@WebServlet("/tours/*")
 public class TourServlet extends HttpServlet {
     private TourServiceImpl tourService;
-    private Configuration fmConfig;
+    private Configuration freemarkerConfig;
 
     @Override
     public void init() throws ServletException {
         try {
-            Connection conn = DatabaseConfig.getConnection();
-            TourDaoImpl tourDao = new TourDaoImpl(conn);
-            tourService = new TourServiceImpl(tourDao);
-
-            fmConfig = new Configuration(Configuration.VERSION_2_3_31);
-            fmConfig.setServletContextForTemplateLoading(getServletContext(), "templates");
+            Connection connection = DatabaseConfig.getConnection();
+            tourService = new TourServiceImpl(new TourDaoImpl(connection));
+            freemarkerConfig = FreemarkerConfig.getConfig();
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new ServletException("Initialization failed", e);
+            throw new ServletException("Ошибка инициализации", e);
         }
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getParameter("action");
-
-        if (action == null) {
-            action = "list";
-        }
-
-        response.setContentType("text/html; charset=UTF-8");
-        PrintWriter out = response.getWriter();
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        String pathInfo = request.getPathInfo();
 
         try {
-            switch (action) {
-                case "view":
-                    viewTour(request, response, out);
-                    break;
-                case "add":
-                    addTourForm(request, response, out);
-                    break;
-                case "edit":
-                    editTourForm(request, response, out);
-                    break;
-                case "delete":
-                    deleteTour(request, response, out);
-                    break;
-                default:
-                    listTours(request, response, out);
-                    break;
+            if (pathInfo == null || pathInfo.equals("/")) {
+                listTours(request, response);
+            } else {
+                viewTour(request, response, pathInfo.substring(1));
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            out.println("<h1>Ошибка: " + e.getMessage() + "</h1>");
+            throw new ServletException(e);
         }
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getParameter("action");
-        response.setContentType("text/html; charset=UTF-8");
-        PrintWriter out = response.getWriter();
-
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         try {
-            switch (action) {
-                case "add":
-                    saveTour(request, response, out);
-                    break;
-                case "edit":
-                    updateTour(request, response, out);
-                    break;
-                default:
-                    listTours(request, response, out);
-                    break;
-            }
+            saveTour(request, response);
         } catch (Exception e) {
-            e.printStackTrace();
-            out.println("<h1>Ошибка: " + e.getMessage() + "</h1>");
+            throw new ServletException(e);
         }
     }
 
-    private void listTours(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws Exception {
+    private void listTours(HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
         List<Tour> tours = tourService.getAll();
+        Map<String, Object> data = new HashMap<>();
+        data.put("tours", tours);
 
-        Map<String, Object> model = new HashMap<>();
-        model.put("tours", tours);
-        model.put("title", "Туры - Travel Planner");
-
-        Template template = fmConfig.getTemplate("tours/list.ftl");
-        template.process(model, out);
+        Template template = freemarkerConfig.getTemplate("tours/list.ftl");
+        PrintWriter out = response.getWriter();
+        template.process(data, out);
     }
 
-    private void viewTour(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws Exception {
-        String idStr = request.getParameter("id");
-        if (idStr == null || idStr.isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/tours");
-            return;
-        }
-
-        Long id = Long.parseLong(idStr);
-        Optional<Tour> tour = tourService.getById(id);
+    private void viewTour(HttpServletRequest request, HttpServletResponse response, String tourId)
+            throws Exception {
+        Optional<Tour> tour = tourService.getById(Long.parseLong(tourId));
+        Map<String, Object> data = new HashMap<>();
 
         if (tour.isPresent()) {
-            Map<String, Object> model = new HashMap<>();
-            model.put("tour", tour.get());
-            model.put("title", tour.get().getName() + " - Travel Planner");
-
-            Template template = fmConfig.getTemplate("tours/view.ftl");
-            template.process(model, out);
+            data.put("tour", tour.get());
+            Template template = freemarkerConfig.getTemplate("tours/view.ftl");
+            PrintWriter out = response.getWriter();
+            template.process(data, out);
         } else {
-            response.sendRedirect(request.getContextPath() + "/tours");
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
-    private void addTourForm(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws Exception {
-        Map<String, Object> model = new HashMap<>();
-        model.put("title", "Добавить тур - Travel Planner");
-
-        Template template = fmConfig.getTemplate("tours/add.ftl");
-        template.process(model, out);
-    }
-
-    private void saveTour(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws Exception {
+    private void saveTour(HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
         String name = request.getParameter("name");
         String description = request.getParameter("description");
-        String priceStr = request.getParameter("price");
+        String destination = request.getParameter("destination");
+        String price = request.getParameter("price");
 
-        if (name == null || name.isEmpty() || priceStr == null || priceStr.isEmpty()) {
-            Map<String, Object> model = new HashMap<>();
-            model.put("error", "Все поля обязательны!");
-            model.put("title", "Добавить тур - Travel Planner");
+        if (name != null && !name.isEmpty() && price != null && !price.isEmpty()) {
+            Tour tour = new Tour();
+            tour.setName(name);
+            tour.setDescription(description);
+            tour.setDestination(destination);
+            tour.setPrice(new BigDecimal(price));
 
-            Template template = fmConfig.getTemplate("tours/add.ftl");
-            template.process(model, out);
-            return;
-        }
-
-        Tour tour = new Tour();
-        tour.setName(name);
-        tour.setDescription(description);
-        tour.setPrice(new BigDecimal(priceStr));
-
-        tourService.save(tour);
-        response.sendRedirect(request.getContextPath() + "/tours");
-    }
-
-    private void editTourForm(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws Exception {
-        String idStr = request.getParameter("id");
-        if (idStr == null || idStr.isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/tours");
-            return;
-        }
-
-        Long id = Long.parseLong(idStr);
-        Optional<Tour> tour = tourService.getById(id);
-
-        if (tour.isPresent()) {
-            Map<String, Object> model = new HashMap<>();
-            model.put("tour", tour.get());
-            model.put("title", "Редактировать тур - Travel Planner");
-
-            Template template = fmConfig.getTemplate("tours/edit.ftl");
-            template.process(model, out);
+            tourService.save(tour);
+            response.sendRedirect("/travelplanner/tours");
         } else {
-            response.sendRedirect(request.getContextPath() + "/tours");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
         }
-    }
-
-    private void updateTour(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws Exception {
-        String idStr = request.getParameter("id");
-        String name = request.getParameter("name");
-        String description = request.getParameter("description");
-        String priceStr = request.getParameter("price");
-
-        Tour tour = new Tour();
-        tour.setId(Long.parseLong(idStr));
-        tour.setName(name);
-        tour.setDescription(description);
-        tour.setPrice(new BigDecimal(priceStr));
-
-        tourService.update(tour);
-        response.sendRedirect(request.getContextPath() + "/tours?action=view&id=" + idStr);
-    }
-
-    private void deleteTour(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws Exception {
-        String idStr = request.getParameter("id");
-        if (idStr != null && !idStr.isEmpty()) {
-            tourService.delete(Long.parseLong(idStr));
-        }
-        response.sendRedirect(request.getContextPath() + "/tours");
     }
 }

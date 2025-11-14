@@ -3,28 +3,26 @@ package com.oris_sem01.travelplanner.controller;
 import com.oris_sem01.travelplanner.config.DatabaseConfig;
 import com.oris_sem01.travelplanner.config.FreemarkerConfig;
 import com.oris_sem01.travelplanner.dao.impl.BookingDaoImpl;
-import com.oris_sem01.travelplanner.service.impl.BookingServiceImpl;
 import com.oris_sem01.travelplanner.model.Booking;
+import com.oris_sem01.travelplanner.service.impl.BookingServiceImpl;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import freemarker.template.TemplateException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-@WebServlet("/bookings")
+@WebServlet("/bookings/*")
 public class BookingServlet extends HttpServlet {
-
     private BookingServiceImpl bookingService;
     private Configuration freemarkerConfig;
 
@@ -34,53 +32,67 @@ public class BookingServlet extends HttpServlet {
             Connection connection = DatabaseConfig.getConnection();
             bookingService = new BookingServiceImpl(new BookingDaoImpl(connection));
             freemarkerConfig = FreemarkerConfig.getConfig();
-        } catch (SQLException e) {
-            throw new ServletException("Failed to initialize BookingServlet", e);
+        } catch (Exception e) {
+            throw new ServletException("Ошибка инициализации", e);
         }
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        var bookings = bookingService.getAll();
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
 
-        Map<String, Object> root = new HashMap<>();
-        root.put("bookings", bookings);
-
-        resp.setContentType("text/html;charset=UTF-8");
         try {
-            Template template = freemarkerConfig.getTemplate("bookings-list.ftl");
-            PrintWriter writer = resp.getWriter();
-            template.process(root, writer);
-        } catch (TemplateException e) {
+            listBookings(request, response);
+        } catch (Exception e) {
             throw new ServletException(e);
         }
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String action = req.getParameter("action");
-
-        if ("create".equals(action)) {
-            addBooking(req, resp);
-        } else if ("delete".equals(action)) {
-            deleteBooking(req, resp);
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            saveBooking(request, response);
+        } catch (Exception e) {
+            throw new ServletException(e);
         }
     }
 
-    private void addBooking(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        Booking booking = new Booking();
-        booking.setUserId(Long.parseLong(req.getParameter("userId")));
-        booking.setTourId(Long.parseLong(req.getParameter("tourId")));
-        booking.setBookingDate(LocalDate.now());
-        booking.setStatus("pending");
+    private void listBookings(HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
+        List<Booking> bookings = bookingService.getAll();
+        Map<String, Object> data = new HashMap<>();
+        data.put("bookings", bookings);
 
-        boolean success = bookingService.save(booking);
-        resp.sendRedirect("/bookings?success=" + (success ? "1" : "0"));
+        Template template = freemarkerConfig.getTemplate("bookings/list.ftl");
+        PrintWriter out = response.getWriter();
+        template.process(data, out);
     }
 
-    private void deleteBooking(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        Long bookingId = Long.parseLong(req.getParameter("id"));
-        boolean success = bookingService.delete(bookingId);
-        resp.sendRedirect("/bookings?success=" + (success ? "1" : "0"));
+    private void saveBooking(HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
+        HttpSession session = request.getSession();
+        Object userObj = session.getAttribute("user");
+
+        if (userObj == null) {
+            response.sendRedirect("/travelplanner/login");
+            return;
+        }
+
+        String tourId = request.getParameter("tourId");
+
+        if (tourId != null && !tourId.isEmpty()) {
+            Booking booking = new Booking();
+            booking.setTourId(Long.parseLong(tourId));
+            booking.setUserId(1L);
+            booking.setBookingDate(LocalDate.now());
+            booking.setStatus("pending");
+
+            bookingService.save(booking);
+            response.sendRedirect("/travelplanner/bookings");
+        } else {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        }
     }
 }

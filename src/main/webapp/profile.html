@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👑 Мой профиль</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ffb6d9 0%, #ffc0cb 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .navbar {
+            background: white;
+            padding: 15px 0;
+            border-bottom: 3px solid #ff1493;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar-content {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff1493;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+        }
+
+        .navbar-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .navbar-links a:hover {
+            color: #ff1493;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 50px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #ff1493;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+        }
+
+        .profile-card {
+            background: linear-gradient(135deg, rgba(255,20,147,0.05) 0%, rgba(255,192,203,0.05) 100%);
+            padding: 30px;
+            border-radius: 10px;
+            border-left: 5px solid #ff1493;
+        }
+
+        .profile-item {
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .profile-item strong {
+            color: #ff1493;
+            font-size: 1.1rem;
+            min-width: 120px;
+        }
+
+        .profile-item span {
+            color: #555;
+            font-size: 1.1rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #ff1493;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #ff0080;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,20,147,0.3);
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #ff5252;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: white;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-content">
+        <div class="navbar-brand">💖 Travel Planner</div>
+        <ul class="navbar-links">
+            <li><a href="/travelplanner/">🏠 Главная</a></li>
+            <li><a href="/travelplanner/profile.html">👑 Профиль</a></li>
+            <li><a href="/travelplanner/users">👥 Пользователи</a></li>
+            <li><a href="/travelplanner/logout">👋 Выход</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>✨ Мой Профиль ✨</h1>
+
+    <div class="profile-card">
+        <div class="profile-item">
+            <strong>👤 Email:</strong>
+            <span id="email">Загрузка...</span>
+        </div>
+        <div class="profile-item">
+            <strong>✍️ Имя:</strong>
+            <span id="firstName">Загрузка...</span>
+        </div>
+        <div class="profile-item">
+            <strong>📝 Фамилия:</strong>
+            <span id="lastName">Загрузка...</span>
+        </div>
+        <div class="profile-item">
+            <strong>🎯 Роль:</strong>
+            <span id="role">Загрузка...</span>
+        </div>
+    </div>
+
+    <div class="button-group">
+        <a href="/travelplanner/" class="btn btn-primary">🏠 На главную</a>
+        <a href="/travelplanner/logout" class="btn btn-danger">👋 Выход</a>
+    </div>
+</div>
+
+<footer>
+    💖 Travel Planner 2025 - Путешествуй с нами!
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
+            document.getElementById('email').textContent = user.email;
+            document.getElementById('firstName').textContent = user.firstName || '-';
+            document.getElementById('lastName').textContent = user.lastName || '-';
+            document.getElementById('role').textContent = user.role;
+        }
+    });
+</script>
+
+</body>
+</html>

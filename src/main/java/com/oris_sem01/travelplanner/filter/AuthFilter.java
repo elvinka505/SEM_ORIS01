@@ -2,7 +2,9 @@ package com.oris_sem01.travelplanner.filter;
 
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Set;
 
@@ -19,7 +21,8 @@ public class AuthFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
 
@@ -47,6 +50,6 @@ public class AuthFilter implements Filter {
 
     @Override
     public void destroy() {
-        // очистка ресурсов, если нужно
+        // очистка при завершении фильтра
     }
 }
