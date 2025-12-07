@@ -1,0 +1,75 @@
+/* Из пример2.docx + твои переменные */
+:root {
+    --rose-dust: #FADADD;
+    --blush-pink: #FFB6C1;
+    --soft-lavender: #E6E6FA;
+    --ink: #4B0082;
+    --shadow: rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: 'Playfair Display', serif;
+    background: linear-gradient(135deg, var(--rose-dust), var(--soft-lavender));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px var(--shadow);
+    max-width: 420px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+    color: var(--ink);
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--blush-pink);
+    border-radius: 12px;
+    transition: border 0.3s;
+}
+
+input:focus {
+    border-color: var(--ink);
+}
+
+button {
+    background: var(--blush-pink);
+    color: white;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: var(--ink);
+}
+
+@media (max-width: 768px) {
+    .container {
+        width: 90%;
+        padding: 20px;
+    }
+    button {
+        font-size: 0.9rem;
+    }
+}

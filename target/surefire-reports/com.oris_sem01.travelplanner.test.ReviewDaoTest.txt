@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.oris_sem01.travelplanner.test.ReviewDaoTest
--------------------------------------------------------------------------------
-Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in com.oris_sem01.travelplanner.test.ReviewDaoTest
