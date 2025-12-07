@@ -1,18 +1,38 @@
 package com.oris_sem01.travelplanner.service;
 
 import com.oris_sem01.travelplanner.model.Tour;
+import com.oris_sem01.travelplanner.repository.TourRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface TourService {
-    Optional<Tour> getById(Long id);
-    List<Tour> getAll();
-    List<Tour> getPage(int pageNumber, int pageSize);
-    List<Tour> searchByName(String name, int page, int size);
-    long getCount();
-    long getCountByName(String name);
-    boolean save(Tour tour);
-    boolean update(Tour tour);
-    boolean delete(Long id);
+public class TourService {
+
+    private final TourRepository tourRepository;
+
+    public TourService(TourRepository tourRepository) {
+        this.tourRepository = tourRepository;
+    }
+
+    public List<Tour> listAll() {
+        return tourRepository.findAll();
+    }
+
+    public Optional<Tour> findById(Long id) {
+        if (id == null) return Optional.empty();
+        return tourRepository.findById(id);
+    }
+
+    public void save(Tour tour) {
+        if (tour.getId() == null) {
+            tourRepository.create(tour);
+        } else {
+            tourRepository.update(tour);
+        }
+    }
+
+    public void delete(Long id) {
+        if (id == null) return;
+        tourRepository.delete(id);
+    }
 }
