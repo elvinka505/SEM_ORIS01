@@ -11,6 +11,7 @@ public class Tour {
     private int durationDays;
     private String destination;
     private String tags;
+    private String imageUrl; // новое поле для картинки
 
     public Long getId() {
         return id;
@@ -66,5 +67,13 @@ public class Tour {
 
     public void setTags(String tags) {
         this.tags = tags;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

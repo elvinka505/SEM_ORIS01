@@ -2,111 +2,49 @@
 
 <@layout.page title="Мой профиль">
 
-    <section class="profile-section">
-        <div class="profile-header">
-            <div class="profile-avatar">
-                <span class="profile-avatar-initial">
-                    ${(user.username!'?')?substring(0, 1)?upper_case}
-                </span>
-            </div>
-            <div class="profile-info">
-                <h1 class="page-title">Мой профиль</h1>
-                <p class="profile-tagline">
-                    Здесь живут твои данные и бронирования 💖
-                </p>
-            </div>
+    <section class="bt-section">
+        <h1 class="bt-section-title">Мой профиль</h1>
+        <p class="bt-section-subtitle">
+            Здесь живут твои данные и бронирования 💖
+        </p>
+
+        <div class="bt-card">
+
+            <h3>@${user.username}</h3>
+            <p>✉ ${user.email}</p>
+            <p>Роль: ${user.role}</p>
+
+            <h3>Что можно сделать</h3>
+            <ul>
+                <li><a href="${request.contextPath}/tours">Посмотреть туры ✈️</a></li>
+                <li><a href="${request.contextPath}/">Вернуться на главную</a></li>
+            </ul>
         </div>
 
-        <div class="profile-grid">
-            <div class="profile-card">
-                <h2 class="profile-name">
-                    @${user.username!'noname'}
-                </h2>
-                <p class="profile-email">
-                    ✉ ${user.email!'no-email@example.com'}
-                </p>
-                <p class="profile-role">
-                    Роль:
-                    <span class="badge badge-secondary">
-                        ${user.role!"USER"}
-                    </span>
-                </p>
-            </div>
+        <div class="bt-section" style="margin-top: 40px;">
 
-            <div class="profile-card profile-actions-card">
-                <h3>Что можно сделать</h3>
-                <ul class="profile-actions-list">
-                    <li>
-                        <a href="${request.contextPath}/tours" class="bt-link">
-                            Посмотреть туры и выбрать новый ✈️
-                        </a>
-                    </li>
-                    <li>
-                        <a href="${request.contextPath}/" class="bt-link">
-                            Вернуться на главную
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
+            <h2 class="bt-section-title">Мои бронирования</h2>
 
-        <div class="profile-bookings">
-            <div class="profile-bookings-header">
-                <h2>Мои бронирования</h2>
-
-                <#if bookings?has_content>
-                    <span class="badge badge-light">
-                        Всего: ${bookings?size}
-                    </span>
-                </#if>
-            </div>
-
-            <#if success??>
-                <div class="bt-alert bt-alert-success">
-                    ${success?html}
-                </div>
+            <#-- Показываем сообщение, если был параметр booking=ok -->
+            <#if booking?? && booking == "ok">
+                <p class="bt-success">Тур успешно забронирован! ✨</p>
             </#if>
 
             <#if bookings?has_content>
-                <table class="table bookings-table">
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Тур</th>
-                        <th>Создано</th>
-                        <th>Статус</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                <ul>
                     <#list bookings as b>
-                        <tr>
-                            <td>${b?index + 1}</td>
-                            <td>Тур #${b.tourId}</td>
-                            <td>
-                                <#if b.createdAt??>
-                                    ${b.createdAt?string("dd.MM.yyyy HH:mm")}
-                                <#else>
-                                    —
-                                </#if>
-                            </td>
-                            <td>
-                                <span class="badge badge-primary">
-                                    ${b.status!"NEW"}
-                                </span>
-                            </td>
-                        </tr>
+                        <li>
+                            Тур ID: ${b.tourId} — статус: ${b.status}
+                        </li>
                     </#list>
-                    </tbody>
-                </table>
+                </ul>
             <#else>
-                <div class="profile-empty">
-                    <p>Ты ещё ничего не бронировала. Самое время исправить 💖</p>
-                    <a href="${request.contextPath}/tours" class="bt-btn bt-btn-primary">
-                        Смотреть туры
-                    </a>
-                </div>
+                <p>Ты ещё ничего не бронировала. Самое время исправить 💖</p>
+                <a class="bt-btn" href="${request.contextPath}/tours">СМОТРЕТЬ ТУРЫ</a>
             </#if>
+
         </div>
+
     </section>
 
 </@layout.page>
