@@ -1,4 +1,3 @@
--- СУЩЕСТВУЮЩАЯ БД:
 -- CREATE DATABASE travel_db;
 -- \c travel_db;
 
@@ -76,7 +75,7 @@ CREATE TABLE schedules (
 CREATE INDEX idx_schedules_tour ON schedules(tour_id);
 
 -- ==========================
--- ПАРА ТЕСТОВЫХ ДАННЫХ
+-- ткстовые данные
 -- ==========================
 
 INSERT INTO tours (title, description, price, duration_days, destination, tags) VALUES
