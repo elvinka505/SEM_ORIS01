@@ -37,3 +37,9 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Build / runtime
+out/
+logs/
+*.log
+war-temp/
