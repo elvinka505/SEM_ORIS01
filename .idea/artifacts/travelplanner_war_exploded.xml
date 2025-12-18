@@ -1,0 +1,22 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="travelplanner:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/travelplanner_war_exploded</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="travelplanner" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: org.freemarker:freemarker:2.3.32" />
+          <element id="library" level="project" name="Maven: org.postgresql:postgresql:42.5.1" />
+          <element id="library" level="project" name="Maven: org.checkerframework:checker-qual:3.5.0" />
+          <element id="library" level="project" name="Maven: com.zaxxer:HikariCP:5.0.1" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:2.0.0-alpha1" />
+          <element id="library" level="project" name="Maven: org.mindrot:jbcrypt:0.4" />
+          <element id="library" level="project" name="Maven: com.google.code.gson:gson:2.10.1" />
+        </element>
+      </element>
+      <element id="javaee-facet-resources" facet="travelplanner/web/Web2" />
+    </root>
+  </artifact>
+</component>
