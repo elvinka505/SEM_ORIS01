@@ -7,8 +7,4 @@
 
     <display-name>TravelPlanner</display-name>
 
-    <!--
-        Все сервлеты (включая BookingServlet) регистрируются через @WebServlet,
-        поэтому в web.xml НИЧЕГО для них не прописываем.
-    -->
 </web-app>

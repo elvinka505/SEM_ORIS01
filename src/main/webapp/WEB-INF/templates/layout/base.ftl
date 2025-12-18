@@ -3,7 +3,7 @@
     <html lang="ru">
     <head>
         <meta charset="UTF-8">
-        <title>${title?html} — bimbo travel planner</title>
+        <title>${title?html} — travel planner</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="stylesheet"
@@ -17,7 +17,7 @@
             <div class="bt-container bt-header-inner">
                 <div class="bt-logo">
                     <a href="${request.contextPath}/" class="bt-logo-link">
-                        bimbo <span>travel</span>
+                        travel <span>planner</span>
                     </a>
                 </div>
 
@@ -27,7 +27,6 @@
                         Туры
                     </a>
 
-                    <#-- Если есть user в модели — показываем профиль / админку -->
                     <#if user??>
                         <a href="${request.contextPath}/profile"
                            class="bt-nav-link">
@@ -55,7 +54,6 @@
             </div>
         </header>
 
-        <!-- Контент -->
         <main class="bt-main">
             <div class="bt-container">
                 <#nested>
@@ -66,7 +64,7 @@
         <footer class="bt-footer">
             <div class="bt-container bt-footer-inner">
             <span class="bt-footer-text">
-                bimbo travel planner • zero thoughts, full schedule ✨
+                travel planner • zero thoughts, full schedule ✨
             </span>
             </div>
         </footer>

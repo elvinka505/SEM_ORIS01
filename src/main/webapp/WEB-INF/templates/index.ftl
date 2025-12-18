@@ -4,11 +4,10 @@
     <section class="bt-hero">
         <div class="bt-hero-content">
             <h1 class="bt-hero-title">
-                Планируй свои <span>barbie-побеги</span>
+                Планируй свои путешествия
             </h1>
             <p class="bt-hero-subtitle">
-                Гламурные уикенды, kawaii-туры и malibu-ретриты — всё в одном планнере.
-                Просто выбери тур и живи как main character ✨
+                Выбери свой тур и живи как main character ✨
             </p>
 
             <div class="bt-hero-actions">
@@ -28,10 +27,6 @@
                     </a>
                 </#if>
             </div>
-        </div>
-        <div class="bt-hero-badge">
-            <span class="bt-pill">zero thoughts</span>
-            <span class="bt-pill">full schedule</span>
         </div>
     </section>
 
@@ -87,7 +82,7 @@
                 </#list>
             <#else>
                 <p class="bt-empty">
-                    Пока нет туров. Админ ещё не накликал красоту 🥲
+                    Пока нет туров. 🥲
                 </p>
             </#if>
         </div>
