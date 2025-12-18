@@ -43,3 +43,6 @@ out/
 logs/
 *.log
 war-temp/
+
+
+.idea/
