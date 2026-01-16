@@ -33,4 +33,8 @@ public class ReviewService {
     public List<Review> listByTour(Long tourId) {
         return reviewRepo.findByTourId(tourId);
     }
+
+    public List<Review> findByTourId(Long id) {
+        return List.of();
+    }
 }

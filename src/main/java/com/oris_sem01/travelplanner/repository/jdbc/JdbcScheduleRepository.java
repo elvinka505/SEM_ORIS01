@@ -17,7 +17,6 @@ public class JdbcScheduleRepository implements ScheduleRepository {
         if (schedule.getId() == null) {
             return insert(schedule);
         }
-        // можно реализовать update по аналогии
         return schedule;
     }
 

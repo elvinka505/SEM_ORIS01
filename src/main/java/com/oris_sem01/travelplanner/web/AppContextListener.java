@@ -18,31 +18,38 @@ public class AppContextListener implements ServletContextListener {
         // Инициализируем Freemarker
         FreemarkerConfig.getConfig(ctx);
 
-        // Репозитории
+        // 2 создание Репозиторий объектов
         JdbcUserRepository userRepo = new JdbcUserRepository();
         JdbcTourRepository tourRepo = new JdbcTourRepository();
         JdbcBookingRepository bookingRepo = new JdbcBookingRepository();
         JdbcReviewRepository reviewRepo = new JdbcReviewRepository();
         JdbcScheduleRepository scheduleRepo = new JdbcScheduleRepository();
 
-        // Сервисы
+        // 3 создание сервис объектов
         UserService userService = new UserService(userRepo);
         TourService tourService = new TourService(tourRepo);
         BookingService bookingService = new BookingService(bookingRepo);
         ReviewService reviewService = new ReviewService(reviewRepo);
         ScheduleService scheduleService = new ScheduleService(scheduleRepo);
 
-        // Кладём в контекст
+        // 4 сохранение в сервлетконтекст
         ctx.setAttribute("userService", userService);
         ctx.setAttribute("tourService", tourService);
         ctx.setAttribute("bookingService", bookingService);
         ctx.setAttribute("reviewService", reviewService);
         ctx.setAttribute("scheduleService", scheduleService);
     }
+    //теперь в любом Servlet'е я могу написать:
+    //UserService service = (UserService) getServletContext()
+    //   .getAttribute("userService");
+    // я получаю тот же самый объект, который был создан при инициализации.
+    // синглтон = объект существует только один на всё приложение
 
+
+    // при отстановке томката
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        // можно закрыть пул, если хочешь
+        // можно закрыть пул
         // ConnectionPool.closePool();
     }
 }

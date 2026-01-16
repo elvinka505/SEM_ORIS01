@@ -29,6 +29,7 @@ public class FreemarkerConfig {
                 cfg.setLogTemplateExceptions(false);
                 cfg.setWrapUncheckedExceptions(true);
                 cfg.setFallbackOnNullLoopVariable(false);
+                cfg.setAPIBuiltinEnabled(true);
                 System.out.println("✓ Freemarker сконфигурирован успешно");
             } catch (Exception e) {
                 System.err.println("❌ Ошибка конфигурации FreeMarker: " + e.getMessage());

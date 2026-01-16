@@ -44,3 +44,7 @@ public class AuthFilter implements Filter {
         chain.doFilter(request, response);
     }
 }
+
+//Проверяет: есть ли пользователь в сессии?
+// Если это /admin и пользователь не админ → 403 Forbidden.
+// Если всё ОК → пускаем дальше.

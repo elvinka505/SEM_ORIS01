@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * JDBC-реализация репозитория туров.
- * Работает через ConnectionPool и использует PreparedStatement.
+ ! JDBC-реализация репозитория туров.
+ ! Работает через ConnectionPool и использует PreparedStatement.
  */
 public class JdbcTourRepository implements TourRepository {
 

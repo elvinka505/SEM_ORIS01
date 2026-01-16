@@ -52,15 +52,12 @@ public class TourAdminServlet extends HttpServlet {
             return;
         }
 
-        String path = req.getPathInfo(); // null, "/new", "/edit"
+        String path = req.getPathInfo();
         if (path == null || "/".equals(path)) {
-            // список туров
             showList(req, resp);
         } else if ("/new".equals(path)) {
-            // форма создания
             showForm(req, resp, null);
         } else if ("/edit".equals(path)) {
-            // форма редактирования
             String idParam = req.getParameter("id");
             if (idParam == null || idParam.isBlank()) {
                 resp.sendRedirect(req.getContextPath() + "/admin/tours");
@@ -70,7 +67,6 @@ public class TourAdminServlet extends HttpServlet {
             Tour tour = tourService.findById(id).orElse(null);
             showForm(req, resp, tour);
         } else {
-            // неизвестный путь -> на список
             resp.sendRedirect(req.getContextPath() + "/admin/tours");
         }
     }
@@ -136,6 +132,7 @@ public class TourAdminServlet extends HttpServlet {
         String durationStr = req.getParameter("durationDays");
         String tags = req.getParameter("tags");
         String description = req.getParameter("description");
+        String imageUrl = req.getParameter("imageUrl");
 
         Map<String, Object> model = new HashMap<>();
         model.put("request", req);
@@ -177,6 +174,7 @@ public class TourAdminServlet extends HttpServlet {
         tour.setDurationDays(durationDays);
         tour.setTags(tags);
         tour.setDescription(description);
+        tour.setImageUrl(imageUrl);
 
         tourService.save(tour);
 

@@ -20,28 +20,44 @@ public class BookingService {
 
     public List<Booking> findByUserId(Long userId) {
         if (userId == null) {
-            throw new IllegalArgumentException("userId is null");
+            throw new IllegalArgumentException("userId не может быть null");
         }
         return bookingRepository.findByUserId(userId);
     }
 
-    public void create(Booking booking) {
-        if (booking == null) {
-            throw new IllegalArgumentException("booking is null");
+    public List<Booking> findByTourId(Long tourId) {
+        if (tourId == null) {
+            throw new IllegalArgumentException("tourId не может быть null");
         }
-        if (booking.getUserId() == null || booking.getTourId() == null) {
+        return bookingRepository.findByTourId(tourId);
+    }
+
+    /**
+     ! Создаёт новое бронирование с проверкой на дубликаты
+     */
+    public void create(Long userId, Long tourId) {
+        if (userId == null || tourId == null) {
             throw new IllegalArgumentException("userId и tourId обязательны");
         }
+
+        // ПРОВЕРКА НА ДУБЛИКАТ
+        List<Booking> existing = bookingRepository.findByUserId(userId);
+        for (Booking b : existing) {
+            if (b.getTourId().equals(tourId)) {
+                throw new IllegalArgumentException("Ты уже забронировал(а) этот тур!");
+            }
+        }
+
+        Booking booking = new Booking();
+        booking.setUserId(userId);
+        booking.setTourId(tourId);
         bookingRepository.create(booking);
     }
 
-    public void delete(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("id is null");
+    public void delete(Long bookingId) {
+        if (bookingId == null) {
+            throw new IllegalArgumentException("bookingId не может быть null");
         }
-        bookingRepository.delete(id);
-    }
-
-    public void create(Long id, long tourId) {
+        bookingRepository.delete(bookingId);
     }
 }

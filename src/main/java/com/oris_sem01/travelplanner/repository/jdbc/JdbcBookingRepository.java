@@ -9,20 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * УПРОЩЁННЫЙ JDBC-репозиторий для таблицы bookings.
- *
- * Заточен под минимальную схему БД:
- *
- * CREATE TABLE bookings (
- *   id      SERIAL PRIMARY KEY,
- *   user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
- *   tour_id BIGINT NOT NULL REFERENCES tours(id) ON DELETE CASCADE
- * );
- *
- * Если у тебя есть ещё колонки (status, created_at и т.д.) — им в БД можно
- * задать DEFAULT, а тут они просто не используются. Для курсового это норм.
- */
 public class JdbcBookingRepository implements BookingRepository {
 
     @Override

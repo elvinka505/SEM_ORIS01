@@ -17,7 +17,6 @@ public class JdbcReviewRepository implements ReviewRepository {
         if (review.getId() == null) {
             return insert(review);
         }
-        // update по желанию, но для зачёта достаточно create
         return review;
     }
 

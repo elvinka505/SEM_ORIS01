@@ -2,8 +2,12 @@ package com.oris_sem01.travelplanner.controller;
 
 import com.oris_sem01.travelplanner.config.FreemarkerConfig;
 import com.oris_sem01.travelplanner.model.Booking;
+import com.oris_sem01.travelplanner.model.Review;
+import com.oris_sem01.travelplanner.model.Tour;
 import com.oris_sem01.travelplanner.model.User;
 import com.oris_sem01.travelplanner.service.BookingService;
+import com.oris_sem01.travelplanner.service.ReviewService;
+import com.oris_sem01.travelplanner.service.TourService;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -15,6 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,11 +29,15 @@ public class ProfileServlet extends HttpServlet {
 
     private Configuration freemarkerConfig;
     private BookingService bookingService;
+    private TourService tourService;
+    private ReviewService reviewService;
 
     @Override
     public void init() throws ServletException {
         freemarkerConfig = FreemarkerConfig.getConfig(getServletContext());
         bookingService = (BookingService) getServletContext().getAttribute("bookingService");
+        tourService = (TourService) getServletContext().getAttribute("tourService");
+        reviewService = (ReviewService) getServletContext().getAttribute("reviewService");
     }
 
     @Override
@@ -43,13 +52,45 @@ public class ProfileServlet extends HttpServlet {
 
         User user = (User) session.getAttribute("user");
 
-        List<Booking> bookings = bookingService != null
-                ? bookingService.findByUserId(user.getId())
-                : List.of();
+        // Получаем бронирования
+        List<Booking> bookings = bookingService != null ?
+                bookingService.findByUserId(user.getId()) : new ArrayList<>();
+
+        // Обогащаем бронирования турами и отзывами
+        List<Map<String, Object>> enrichedBookings = new ArrayList<>();
+
+        if (bookings != null && !bookings.isEmpty()) {
+            for (Booking b : bookings) {
+                Map<String, Object> bookingData = new HashMap<>();
+                bookingData.put("booking", b);
+
+                // Получаем тур
+                var tourOpt = tourService != null ? tourService.findById(b.getTourId()) : java.util.Optional.empty();
+                Tour tour = tourOpt.isPresent() ? (Tour) tourOpt.get() : null;
+                bookingData.put("tour", tour);
+
+                // Получаем отзывы для этого тура
+                List<Review> reviews = new ArrayList<>();
+                if (tour != null && reviewService != null) {
+                    var reviewList = reviewService.findByTourId(tour.getId());
+                    if (reviewList != null) {
+                        reviews = reviewList;
+                    }
+                }
+                bookingData.put("reviews", reviews);
+
+                enrichedBookings.add(bookingData);
+            }
+        }
+
+        System.out.println("🎫 ProfileServlet:");
+        System.out.println("   User: " + user.getId());
+        System.out.println("   Bookings: " + bookings.size());
+        System.out.println("   Enriched: " + enrichedBookings.size());
 
         Map<String, Object> model = new HashMap<>();
         model.put("user", user);
-        model.put("bookings", bookings);
+        model.put("bookings", enrichedBookings);
         model.put("request", req);
 
         if ("ok".equals(req.getParameter("booking"))) {
